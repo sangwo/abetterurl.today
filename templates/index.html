@@ -8,8 +8,32 @@
     <form action="/" method="post">
       <label>URL to shorten:</label>
       <input type="text" name="original_url"></input>
-      <button>Shorten URL</button>
+      <button id="shorten-url-button">Shorten URL</button>
+
+      <div id="shortened-url"></div>
     </form>
 
+  <script src="static/lib/jquery-3.2.1.min.js"></script>
+  <script>
+    $(document).ready(function() {
+
+      $('#shorten-url-button').on('click', function(e) {
+	e.preventDefault(); 
+	var originalUrl = $('input[name="original_url"]').val(); 
+	$.ajax({
+	  url: "/", // server to send request
+	  type: "POST",
+	  data: {'original_url': originalUrl}, // data to send to server
+	  success: function(result) { // result got from server
+	    $('#shortened-url').text(result);
+	  }/*,
+	  error: function (jqXHR, textStatus, errorThrown) {
+	       
+	  }*/
+	});
+      }); 
+
+    });
+  </script>
   </body>
 </html>
