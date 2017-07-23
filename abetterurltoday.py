@@ -1,6 +1,6 @@
 from flask import Flask
 app = Flask(__name__)
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, abort
 import time
 
 import sqlite3
@@ -40,6 +40,11 @@ def shorten_url():
 
 @app.route('/<id>')
 def redirect_to_shortened_url(id=None):
+  # if id doesn't exist, return 404 error
+  if not get_db().execute('SELECT EXISTS(SELECT id FROM urls WHERE id=?)', (id,)).fetchall()[0][0]:
+    abort(404)
+
+  # else, redirect to original url
   original_url = get_db().execute(
     'SELECT original_url FROM urls WHERE id=?',
     (id,)
