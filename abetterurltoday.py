@@ -43,5 +43,5 @@ def redirect_to_shortened_url(id=None):
   original_url = get_db().execute(
     'SELECT original_url FROM urls WHERE id=?',
     (id,)
-  ).fetchall()[0][0]
+  ).fetchall()[0][0] # fetchall() >> tuple inside array
   return redirect(original_url)

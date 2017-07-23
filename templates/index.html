@@ -11,26 +11,37 @@
       <button id="shorten-url-button">Shorten URL</button>
 
       <div id="shortened-url"></div>
+      <div id="error-message"></div>
     </form>
 
   <script src="static/lib/jquery-3.2.1.min.js"></script>
   <script>
+    function checkValidUrl(url) {
+      return /^https?:\/\/([-_\w]+\.)*([-_\w]+\.)\w+(\/.*)*/.test(url);
+    }
+
     $(document).ready(function() {
 
       $('#shorten-url-button').on('click', function(e) {
-	e.preventDefault(); 
+	// clear error message
+	$('#error-message').text('');
+
+	e.preventDefault(); // send form data to server(now we're doing by ajax) when submit button clicked, and refresh 
 	var originalUrl = $('input[name="original_url"]').val(); 
-	$.ajax({
-	  url: "/", // server to send request
-	  type: "POST",
-	  data: {'original_url': originalUrl}, // data to send to server
-	  success: function(result) { // result got from server
-	    $('#shortened-url').text(result);
-	  }/*,
-	  error: function (jqXHR, textStatus, errorThrown) {
-	       
-	  }*/
-	});
+
+	// check if input value is valid url
+	if(!checkValidUrl(originalUrl)) {
+	  $('#error-message').text("Not a valid url");
+	} else {
+	  $.ajax({
+	    url: "/", // server to send request
+	    type: "POST",
+	    data: {'original_url': originalUrl}, // data to send to server
+	    success: function(result) { // result got from server
+	      $('#shortened-url').text(result);
+	    }
+	  });
+	}
       }); 
 
     });
