@@ -1,9 +1,11 @@
 from flask import Flask
 app = Flask(__name__)
-from flask import render_template, request, redirect, url_for, abort
+from flask import render_template, request, redirect, url_for, abort, jsonify
 import time
 from hashids import Hashids
 hashids = Hashids()
+
+NUM_SHORTENED_URLS_PER_DAY = 10
 
 import sqlite3
 from flask import g
@@ -30,18 +32,37 @@ def index():
 @app.route('/', methods=['POST'])
 def shorten_url():
   db = get_db()
-  cursor = db.execute(
-    'INSERT INTO urls (timestamp, original_url) VALUES (?, ?)',
-    (int(time.time()), request.form['original_url'])
-  )
-  cursor.fetchall()
-  db.commit()
 
-  # generate hash with id
-  url_hash = hashids.encode(cursor.lastrowid)
+  # limit shortening url to NUM_SHORTENED_URLS_PER_DAY times a day
+  # TODO: limit it per computer(ip)
+  today_year = int(time.strftime("%Y"))
+  today_month = int(time.strftime("%m"))
+  today_day = int(time.strftime("%d"))
+  today = time.mktime(time.struct_time((today_year, today_month, today_day, 0, 0, 0, 0, 0, -1)))
+  num_shortened_urls_today = db.execute(
+    'SELECT count(*) FROM urls WHERE timestamp - ? >= 0',
+    (today,)
+  ).fetchall()[0][0]
 
-  url_tail = url_for('redirect_to_shortened_url', url_hash=url_hash)
-  return 'http://' + request.host + url_tail
+  if num_shortened_urls_today >= NUM_SHORTENED_URLS_PER_DAY:
+    # return error message
+    error_message = "Sorry, you can shorten only {} times per day. Visit again tommorrow!".format(NUM_SHORTENED_URLS_PER_DAY) 
+    return jsonify(error=True, error_message=error_message)
+  else:
+    # insert data into database and return shortened url
+    cursor = db.execute(
+      'INSERT INTO urls (timestamp, original_url) VALUES (?, ?)',
+      (int(time.time()), request.form['original_url'])
+    )
+    cursor.fetchall()
+    db.commit()
+
+    # generate hash with id
+    url_hash = hashids.encode(cursor.lastrowid)
+
+    url_tail = url_for('redirect_to_shortened_url', url_hash=url_hash)
+    shortened_url = 'http://' + request.host + url_tail
+    return jsonify(error=False, shortened_url=shortened_url)
 
 @app.route('/<url_hash>')
 def redirect_to_shortened_url(url_hash=None):

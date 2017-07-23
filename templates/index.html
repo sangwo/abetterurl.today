@@ -37,8 +37,15 @@
 	    url: "/", // server to send request
 	    type: "POST",
 	    data: {'original_url': originalUrl}, // data to send to server
+	    dataType: "json", // need?
 	    success: function(result) { // result got from server
-	      $('#shortened-url').text(result);
+	      // if error is true, write on #error-message
+	      if(result.error) {
+		$('#error-message').text(result.error_message);
+	      } else {
+		// else #shortened-url
+		$('#shortened-url').text(result.shortened_url);
+	      }
 	    }
 	  });
 	}
