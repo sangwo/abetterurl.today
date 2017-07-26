@@ -13,7 +13,7 @@ h1 {
 }
 
 input[name="original_url"] {
-  border: 1px solid #f23f2b;
+  border: none;
   font-size: 30px;
   padding: 20px 30px;
   width: 500px;
@@ -30,11 +30,15 @@ input[name="original_url"] {
   font-size: 30px;
   width: auto;
   margin-left: -5px;
-  border: 1px solid #f23f2b;
+  border: none;
   background-color: #f23f2b;
   color: white;
   border-radius: 0 10px 10px 0;
   font-family: 'Comfortaa', cursive;
+}
+
+#shorten-url-button:active {
+  background-color: #ff8d23;
 }
 
 #message {
@@ -54,7 +58,11 @@ input[name="original_url"] {
   line-height: 55px;
   font-size: 25px;
   color: white;
-  cursor: default;
+  cursor: pointer;
+}
+
+#shortened-url:hover {
+  color: #ff8d23;
 }
 
 #shortened-url:active {

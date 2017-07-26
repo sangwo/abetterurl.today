@@ -2,56 +2,87 @@
 <html>
   <head>
     <title>A Better Url Today</title>
+    
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <link rel="stylesheet" type="text/css" href="static/lib/Comfortaa.css">
   </head>
   <body>
 
+    <h1>A Better URL Today</h1>
+
     <form action="/" method="post">
-      <label>URL to shorten:</label>
-      <input type="text" name="original_url"></input>
-      <button id="shorten-url-button">Shorten URL</button>
-
-      <div id="shortened-url"></div>
-      <div id="error-message"></div>
+      <input type="text" name="original_url" placeholder="Paste URL to shorten"></input>
+      <button id="shorten-url-button">Shorten</button>
     </form>
+    
+    <div id="message"></div>
+    <div id="shortened-url"></div>
 
-  <script src="static/lib/jquery-3.2.1.min.js"></script>
-  <script>
-    function checkValidUrl(url) {
-      return /^https?:\/\/([-_\w]+\.)*([-_\w]+\.)\w+(\/.*)*/.test(url);
-    }
+    <script src="static/lib/jquery-3.2.1.min.js"></script>
+    <script>
+      function checkValidUrl(url) {
+	return /^https?:\/\/([-_\w]+\.)*([-_\w]+\.)\w+(\/.*)*/.test(url);
+      }
 
-    $(document).ready(function() {
+      function copyToClipboard(element) {
+	var $temp = $("<input>");
+	$("body").append($temp);
+	$temp.val(element.text()).select();
+	document.execCommand("copy");
+	$temp.remove();
+      }
 
-      $('#shorten-url-button').on('click', function(e) {
-	// clear error message
-	$('#error-message').text('');
+      $(document).ready(function() {
+	// css visibility: hidden, in that state, slide up #shortened-url
+	$('#shortened-url').slideUp(300, "swing");
 
-	e.preventDefault(); // send form data to server(now we're doing by ajax) when submit button clicked, and refresh 
-	var originalUrl = $('input[name="original_url"]').val(); 
+	$('#shorten-url-button').on('click', function(e) {
+	  // clear error message
+	  $('#message').text('');
 
-	// check if input value is valid url
-	if(!checkValidUrl(originalUrl)) {
-	  $('#error-message').text("Not a valid url");
-	} else {
-	  $.ajax({
-	    url: "/", // server to send request
-	    type: "POST",
-	    data: {'original_url': originalUrl}, // data to send to server
-	    dataType: "json", // need?
-	    success: function(result) { // result got from server
-	      // if error is true, write on #error-message
-	      if(result.error) {
-		$('#error-message').text(result.error_message);
-	      } else {
-		// else #shortened-url
-		$('#shortened-url').text(result.shortened_url);
+	  e.preventDefault(); // send form data to server(now we're doing by ajax) when submit button clicked, and refresh 
+	  var originalUrl = $('input[name="original_url"]').val(); 
+
+	  // check if input value is valid url
+	  if(!checkValidUrl(originalUrl)) {
+	    $('#message').text("Not a valid url");
+	    // hide #shortened-url
+	    $('#shortened-url').css('visibility', 'hidden');
+	    $('#shortened-url').slideUp(300, "swing");
+	  } else {
+	    $.ajax({
+	      url: "/", // server to send request
+	      type: "POST",
+	      data: {'original_url': originalUrl}, // data to send to server
+	      dataType: "json", // need?
+	      success: function(result) { // result got from server
+		// if error is true, show error message on #message
+		if(result.error) {
+		  $('#message').text(result.error_message);
+		  // hide #shortened-url
+		  $('#shortened-url').css('visibility', 'hidden');
+		  $('#shortened-url').slideUp(300, "swing");
+		} else {
+		  // reset original url input
+		  $('input[name="original_url"]').val('');
+		  // show shortened url on #shortened-url
+		  $('#shortened-url').text(result.shortened_url);
+		  $('#shortened-url').css('visibility', 'visible');
+		  $('#shortened-url').slideDown(300, "swing");
+		  // show click to copy message
+		  $('#message').text("Click URL to copy");
+		}
 	      }
-	    }
-	  });
-	}
-      }); 
+	    });
+	  }
+	}); 
 
-    });
-  </script>
+	$('#shortened-url').on('click', function() {
+	  copyToClipboard($(this));
+	  $('#message').text("Copied to clipboard");
+	})
+  
+      });
+    </script>
   </body>
 </html>

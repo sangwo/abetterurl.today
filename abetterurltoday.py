@@ -5,7 +5,7 @@ import time
 from hashids import Hashids
 hashids = Hashids()
 
-NUM_SHORTENED_URLS_PER_DAY = 10
+NUM_SHORTENED_URLS_PER_DAY = 60
 
 import sqlite3
 from flask import g
