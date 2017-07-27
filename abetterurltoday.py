@@ -65,7 +65,7 @@ def shorten_url():
     shortened_url = 'http://' + request.host + url_tail
     return jsonify(error=False, shortened_url=shortened_url)
 
-@app.route('/<url_hash>')
+@app.route('/r/<url_hash>')
 def redirect_to_shortened_url(url_hash=None):
   # decode hash to find id
   id = hashids.decode(url_hash)[0] # decode() returns tuple
