@@ -1,16 +1,14 @@
 from flask import Flask
-app = Flask(__name__)
-from flask import render_template, request, redirect, url_for, abort, jsonify
+from flask import render_template, request, redirect, url_for, abort, jsonify, g
 import time
 from hashids import Hashids
-hashids = Hashids()
-
-NUM_SHORTENED_URLS_PER_DAY = 60
-
 import sqlite3
-from flask import g
 
 DATABASE = 'urls.db'
+NUM_SHORTENED_URLS_PER_DAY = 60
+
+hashids = Hashids()
+app = Flask(__name__)
 
 def get_db():
   db = getattr(g, '_database', None)
