@@ -1,10 +1,13 @@
+import os
 from flask import Flask
 from flask import render_template, request, redirect, url_for, abort, jsonify, g
 import time
 from hashids import Hashids
 import sqlite3
 
-DATABASE = 'urls.db'
+PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
+DATABASE = os.path.join(PROJECT_ROOT, 'urls.db')
+
 NUM_SHORTENED_URLS_PER_DAY = 60
 
 hashids = Hashids()
