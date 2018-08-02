@@ -1,16 +1,17 @@
+import os
 from flask import Flask
-app = Flask(__name__)
-from flask import render_template, request, redirect, url_for, abort, jsonify
+from flask import render_template, request, redirect, url_for, abort, jsonify, g
 import time
 from hashids import Hashids
-hashids = Hashids()
+import sqlite3
+
+PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
+DATABASE = os.path.join(PROJECT_ROOT, 'urls.db')
 
 NUM_SHORTENED_URLS_PER_DAY = 60
 
-import sqlite3
-from flask import g
-
-DATABASE = 'urls.db'
+hashids = Hashids()
+app = Flask(__name__)
 
 def get_db():
   db = getattr(g, '_database', None)
@@ -64,7 +65,7 @@ def shorten_url():
     shortened_url = 'http://' + request.host + url_tail
     return jsonify(error=False, shortened_url=shortened_url)
 
-@app.route('/<url_hash>')
+@app.route('/r/<url_hash>')
 def redirect_to_shortened_url(url_hash=None):
   # decode hash to find id
   id = hashids.decode(url_hash)[0] # decode() returns tuple
