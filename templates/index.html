@@ -5,6 +5,8 @@
     
     <link rel="stylesheet" type="text/css" href="static/style.css">
     <link rel="stylesheet" type="text/css" href="static/lib/Comfortaa.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
 
@@ -17,6 +19,8 @@
     
     <div id="message"></div>
     <div id="shortened-url"></div>
+
+    <footer>Copyright &copy; <span id="copyright-year"></span> Sangwon Kim. All Rights Reserved.</footer>
 
     <script src="static/lib/jquery-3.2.1.min.js"></script>
     <script>
@@ -81,6 +85,9 @@
 	  copyToClipboard($(this));
 	  $('#message').text("Copied to clipboard");
 	})
+
+	var currentYear = (new Date()).getFullYear();
+	$('#copyright-year').append(currentYear);
   
       });
     </script>

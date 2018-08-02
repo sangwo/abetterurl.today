@@ -4,7 +4,8 @@ body {
   margin-top: 10%;
   font-family: 'Comfortaa', cursive;
   background-image: url('/static/background.jpg');
-  background-size: cover;
+  background-size: auto 100vh;
+  background-repeat: no-repeat;
 }
 
 h1 {
@@ -67,4 +68,19 @@ input[name="original_url"] {
 
 #shortened-url:active {
   color: #f23f2b;
+}
+
+footer {
+  color: white;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Responsive design */
+@media only screen and (min-width: calc(100vh * 0.625)) { /*doesn't work*/
+  body {
+    background-size: cover;
+  }  
 }
